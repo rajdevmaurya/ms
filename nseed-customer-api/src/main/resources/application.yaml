@@ -1,0 +1,46 @@
+server:
+  port: 9992
+spring:
+  application:
+    name: NSEED-CUSTOMER-API
+  datasource:
+    url: jdbc:h2:mem:NSEED;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=Oracle
+    platform: h2
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    data : classpath:NSEED.sql
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        use_sql_comments: true
+        format_sql: true
+
+###
+#   H2 Settings
+###
+  h2:
+    console:
+      enabled: true
+      path: /h2
+      settings:
+        trace: false
+        web-allow-others: false
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+ofsaa:
+  api:
+    endpoint: 
+      mcp: http://localhost:9991
+ofsaaEndpoint:
+  host: http://localhost:9990

@@ -1,0 +1,207 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: "NSEED API SERVICE"
+tags:
+- name : "CUSTOMER"
+  description: "API for Nseed Store"
+servers:
+  - url: http://localhost:8081/v1
+paths:
+  /nseed/customer/getCustomerSummaryData:
+    get:
+      tags:
+        - "CUSTOMER"
+      summary: "Return search summary details"
+      operationId: "getCustomerSummaryData"
+      parameters:
+        - name: "q"
+          in: "query"
+          description : "Search Customer"
+          required : false
+          schema:
+            type: "string"
+        - name : "page"
+          in: "query"
+          description : "Search Customer"
+          required : false
+          schema:
+            type : integer 
+            format: int32
+            default: 1
+        - name: size
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+          "200":
+             description: "OK"
+             content:
+               application/json:
+                 schema:
+                   type: array
+                   items:
+                     $ref: "#/components/schemas/CustomerRequestSummary"
+          "404": 
+            description: "Not Found"
+          "405":
+            description: "Invalid input"
+  /nseed/customer/filterCustomerSummaryData:
+    get:
+      tags:
+        - "CUSTOMER"
+      summary: "Return filtered customer summary data"
+      operationId: "filterCustomerSummaryData"
+      parameters:
+        - name: "pageNumber"
+          in: "query"
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: "pageSize"
+          in: "query"
+          schema:
+            type: integer
+            format: int32
+            default: 2
+        - name: "q"
+          in: "query"
+          schema:
+            type: string
+        - name: "sortBy"
+          in: "query"
+          schema:
+            type: string
+      responses:
+          "200":
+             description: "OK"
+             content:
+               application/json:
+                 schema:
+                     $ref: "#/components/schemas/Page"
+          "404": 
+            description: "Not Found"
+          "405":
+            description: "Invalid input"
+
+  /nseed/customer/create:
+      post:
+        tags:
+        - "CUSTOMER"
+        summary: "Create a new customer to the store"
+        operationId: "createCustomer"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerRequest"
+        responses:
+          "200":
+             description: "OK"
+          "404": 
+            description: "Not Found"
+          "405":
+            description: "Invalid input"
+  /nseed/customer/update:
+      put:
+        tags:
+        - "CUSTOMER"
+        summary: "Update an existing customer request"
+        operationId: "updateCustomer"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerRequest"
+        responses:
+          "200":
+             description: "OK"
+          "404" : 
+            description: "Not Found"
+          "405":
+            description: "Invalid input"
+  /nseed/customer/lookup/{requestId}:
+    get:
+      tags:
+       - "CUSTOMER"
+      summary: "Reurn detailed Customer Request information"
+      operationId: "fetchCustomerRequest"
+      parameters:
+        - name: "requestId"
+          in: "path"
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+           description: "OK"
+           content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/CustomerRequest"
+        "404":
+          description: "Not Found"
+        "405":
+          description: "Invalid input"
+components:
+  schemas:
+    Status:
+      type: "string"
+      enum:
+      - "Y"
+      - "N" 
+    CustomerRequest:
+      type: "object"
+      properties:
+        requestId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        active:
+          type: boolean
+        mobile:
+          type: integer
+          format: int64
+        createDt:
+          type : string
+          format : "date"
+          example: "2021-01-30"
+    CustomerRequestSummary:
+      type: "object"
+      properties:
+        requestId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        active:
+          type: boolean
+        mobile:
+          type: integer
+          format: int64
+        status:
+          $ref: "#/components/schemas/Status"
+    Page: 
+      description: minimal Pageable query parameters
+      type: object
+      properties:
+        totalPages:
+          type: integer
+        size:
+          type: integer      
+

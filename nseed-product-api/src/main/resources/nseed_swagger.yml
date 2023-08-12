@@ -1,0 +1,214 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: "NSEED API SERVICE"
+tags:
+- name : "PRODUCT"
+  description: "API for Nseed Store"
+servers:
+  - url: http://localhost:8081/v1
+paths:
+  /nseed/product/getProductSummaryData:
+    get:
+      tags:
+        - "PRODUCT"
+      summary: "Return search summary details"
+      operationId: "getProductSummaryData"
+      parameters:
+        - name: "q"
+          in: "query"
+          description : "Search Product"
+          required : false
+          schema:
+            type: "string"
+        - name : "page"
+          in: "query"
+          description : "Search Product"
+          required : false
+          schema:
+            type : integer 
+            format: int32
+            default: 1
+        - name: size
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+          "200":
+             description: "OK"
+             content:
+               application/json:
+                 schema:
+                   type: array
+                   items:
+                     $ref: "#/components/schemas/ProductRequestSummary"
+          "404": 
+            description: "Not Found"
+          "405":
+            description: "Invalid input"
+  /nseed/product/filterProductSummaryData:
+    get:
+      tags:
+        - "PRODUCT"
+      summary: "Return filtered product summary data"
+      operationId: "filterProductSummaryData"
+      parameters:
+        - name: "pageNumber"
+          in: "query"
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: "pageSize"
+          in: "query"
+          schema:
+            type: integer
+            format: int32
+            default: 2
+        - name: "q"
+          in: "query"
+          schema:
+            type: string
+        - name: "sortBy"
+          in: "query"
+          schema:
+            type: string
+      responses:
+          "200":
+             description: "OK"
+             content:
+               application/json:
+                 schema:
+                     $ref: "#/components/schemas/Page"
+          "404": 
+            description: "Not Found"
+          "405":
+            description: "Invalid input"
+
+  /nseed/product/create:
+      post:
+        tags:
+        - "PRODUCT"
+        summary: "Create a new product to the store"
+        operationId: "createProduct"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductRequest"
+        responses:
+          "200":
+             description: "OK"
+          "404": 
+            description: "Not Found"
+          "405":
+            description: "Invalid input"
+  /nseed/product/update:
+      put:
+        tags:
+        - "PRODUCT"
+        summary: "Update an existing product request"
+        operationId: "updateProduct"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductRequest"
+        responses:
+          "200":
+             description: "OK"
+          "404" : 
+            description: "Not Found"
+          "405":
+            description: "Invalid input"
+  /nseed/product/lookup/{requestId}:
+    get:
+      tags:
+       - "PRODUCT"
+      summary: "Reurn detailed Product Request information"
+      operationId: "fetchProductRequest"
+      parameters:
+        - name: "requestId"
+          in: "path"
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+           description: "OK"
+           content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/ProductRequest"
+        "404":
+          description: "Not Found"
+        "405":
+          description: "Invalid input"
+components:
+  schemas:
+    Status:
+      type: "string"
+      enum:
+      - "Y"
+      - "N" 
+    ProductRequest:
+      type: "object"
+      properties:
+        requestId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        sku:
+          type: string
+        category:
+          type: string
+        active:
+          type: boolean
+        price:
+          type: integer
+          format: int64
+        description:
+          type: string
+        imageUrl:
+          type: string
+        availableQuantities:
+          type: integer
+          format: int32
+        createDt:
+          type : string
+          format : "date"
+          example: "2021-01-30"
+    ProductRequestSummary:
+      type: "object"
+      properties:
+        requestId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        sku:
+          type: string
+        category:
+          type: string
+        active:
+          type: boolean
+        price:
+          type: integer
+          format: int64
+        status:
+          $ref: "#/components/schemas/Status"
+    Page: 
+      description: minimal Pageable query parameters
+      type: object
+      properties:
+        totalPages:
+          type: integer
+        size:
+          type: integer      
+

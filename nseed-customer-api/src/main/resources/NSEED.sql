@@ -1,0 +1,1 @@
+INSERT INTO `CUSTOMER` (`customer_id`, `description`, `name`,`created_at`, `updated_at` ) VALUES (1,'LEGO Cup test','Coffee Cup',NULL,NULL);
