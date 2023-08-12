@@ -1,0 +1,67 @@
+buildscript {
+
+ext {
+	set('springBootVersion',"2.4.1")
+	set('springBootStarterConfigVerson',"2.4.1")
+	set('mavenAssemblyVersion',"3.1.1")
+	set('gitGradlePluginVersion',"1.4.17")
+	set('springCloudVersion',"2020.0.0")
+	set('springGradlePluginVersion',"1.0.2.RELEASE")
+	
+}
+repositories {
+  mavenCentral()
+  jcenter()
+}
+
+
+dependencies {
+      classpath ("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+      classpath ("io.spring.gradle:dependency-management-plugin:${springGradlePluginVersion}")
+      classpath ("gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:${gitGradlePluginVersion}") 
+}
+}
+
+
+plugins {
+	id 'org.springframework.boot' version '2.4.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'idea'
+    id 'java-library'
+	id 'maven'
+	id 'maven-publish'
+	id 'eclipse'
+}
+
+group = 'com.nseed'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2020.0.0")
+}
+
+dependencies {
+     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+	//implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+apply from : "$rootDir/gradlebuild/deployment.gradle"
+apply from : "$rootDir/gradlebuild/dependencies.gradle"
+apply from : "$rootDir/gradlebuild/ditribute.gradle"
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+test {
+	useJUnitPlatform()
+}

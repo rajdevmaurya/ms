@@ -1,0 +1,114 @@
+buildscript {
+
+ext {
+	set('springBootVersion',"2.1.9.RELEASE")
+	set('springBootStarterConfigVerson',"2.4.2.RELEASE")
+	set('mavenAssemblyVersion',"3.1.1")
+	set('gitGradlePluginVersion',"1.4.17")
+	set('springCloudVersion',"Greenwich.RELEASE")
+	set('springGradlePluginVersion',"1.0.2.RELEASE")
+	set('springStarterConfigVersion',"2.1.2.RELEASE")
+	set('openApiGeneratorVersion',"4.2.3")
+	set('swagger_annotations_version',"1.5.14")
+	//set('spring-cloud-netflix-eureka-client','3.0.1')
+	set('eurekaClientVersion','2.1.0.RELEASE')
+	set('springContractGradleVersion',"2.2.5.RELEASE")
+	
+}
+repositories {
+  mavenCentral()
+  jcenter()
+}
+
+
+dependencies {
+      classpath ("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+      classpath ("io.spring.gradle:dependency-management-plugin:${springGradlePluginVersion}")
+      classpath ("gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:${gitGradlePluginVersion}") 
+      classpath ("org.openapitools:openapi-generator-gradle-plugin:${openApiGeneratorVersion}")
+      classpath ("org.springframework.cloud:spring-cloud-contract-gradle-plugin:${springContractGradleVersion}")
+      classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2' 
+     }
+}
+plugins {
+    id 'idea'
+    id 'java'
+    id 'java-library'
+	id 'maven'
+	id 'maven-publish'
+	id 'eclipse'
+	id 'org.springframework.boot' version '2.1.8.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id "com.diffplug.eclipse.apt" version "3.26.0"
+}
+
+apply plugin: 'org.openapi.generator'
+
+group = 'com.nseed.catalog'
+version = '0.0.1-SNAPSHOT'
+//sourceCompatibility = '1.8'
+//targetCompatibility = '1.8'
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+archivesBaseName='nseed-catalog-api'
+
+apply from : "$rootDir/gradlebuild/deployment.gradle"
+apply from : "$rootDir/gradlebuild/dependencies.gradle"
+apply from : "$rootDir/gradlebuild/ditribute.gradle"
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-contract-dependencies:${springContractGradleVersion}"
+	}
+}
+def buildTime() {
+   //def df = new SimpleDateFormat("EEE, MMM d, yyyy 'at' HH:mm:ss z") //you can change it
+   //df.setTimeZone(TimeZone.getTimeZone("UTC"))
+   // return df.format(new Date())
+}
+springBoot {
+   buildInfo {
+          // properties = { additional = [ time : 'bar' ]  buildTime() }
+        }
+  mainClassName = 'com.nseed.catalog.NseedProductApiApplication'
+}
+
+task buildApiCode(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask){
+    generatorName = "spring"
+    inputSpec = "$rootDir/src/main/resources/nseed_swagger.yml".toString()
+    outputDir = "$buildDir/generated".toString() 
+    apiPackage = "com.nseed.catalog.api"
+    modelPackage = "com.nseed.catalog.api.model"
+    enablePostProcessFile = true
+    configOptions = [
+            configPackage : "com.nseed.catalog.api.config",
+            id  :                     "$project.name-java-client",
+           // java8         : "true",
+            dateLibrary   : "java8",
+            serializationLibrary : "jackson",
+            useBeanValidation : "false",
+            interfaceOnly     : "false",
+            serializableModel :"true",
+            useTags           : "true",
+            delegatePattern : "true",
+            generateApiTests : "true",
+            validateSpace    : "true"
+      ]
+      importMappings = [
+        'Page': 'org.springframework.data.domain.Page',
+        'Sort': 'org.springframework.data.domain.Sort'
+    ]
+}
+compileJava.dependsOn(buildApiCode)
+
+sourceSets {
+     main {
+           java{
+                  srcDir "$buildDir/generated/src/main/java"
+            }
+      }
+}
