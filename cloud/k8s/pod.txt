@@ -1,0 +1,47 @@
+Create a pod 
+
+ kubectl run mypod --image nginx:latest --port 80 --labels app:myapp --dry-run=client
+ kubectl run mypod --image nginx:latest --port 80 --labels app=myapp --dry-run=client
+
+ kubectl run mypod --image nginx:latest --port 80 --labels app=myapp  # create pod 
+
+ kubectl get pods  # list pods
+
+ kubectl describe pod mypod # to see all events and configurations
+
+ kubectl logs mypod  # to see container logs
+
+ kubectl exec -it mypod -- bash # login to container 
+
+ kubectl delete pod mypod  # delete pod 
+
+vi pod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    app: myapp
+  name: mypod
+spec:
+  containers:
+  - image: nginx:latest
+    name: mypod
+    ports:
+    - containerPort: 80
+  - image: nginx:latest
+    name: mypod
+    ports:
+    - containerPort: 80
+
+
+loginto contiainer 
+kubectl exec -it mypod -c con2 -- bash
+
+read logs 
+kubectl logs mypod -c con1
+
+
+
+kubectl logs mypod -c con2

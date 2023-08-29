@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: wpapp
+  name: wordpress-app
+spec:
+  containers:
+  - image: wordpress:latest
+    name: con1
+    ports:
+    - containerPort: 80
+  - image: mysql:5.7
+    name: con2
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: test123
+    - name: MYSQL_DATABASE
+      value: wordpress
+    ports:
+    - containerPort: 3306
+    
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-svc
+spec:
+  ports:
+  - name: port-1
+    port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30123
+  selector:
+    app: wpapp
+  type: NodePort

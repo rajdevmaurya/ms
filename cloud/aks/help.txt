@@ -1,0 +1,3 @@
+https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli
+
+az group delete --name ask-rg --yes --no-wait

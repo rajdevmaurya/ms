@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    description: "this is test data"
+  labels:
+    app: mango
+    env: dev
+  name: mypod
+spec:
+  containers:
+  - image: nginx:latest
+    name: con1
+    ports:
+    - containerPort: 80
+  - image: tomcat:latest
+    name: con2
+    ports:
+    - containerPort: 8080
+    
+
+      

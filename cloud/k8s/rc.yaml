@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ReplicationController
+metadata: 
+  name: myrc
+spec:
+   replicas: 3
+   selector:
+      app: mango
+   template:
+     metadata: 
+        labels:
+          app: mango
+     spec:
+        containers:
+        - name: con1
+          image: nginx:latest
+          ports: 
+          - containerPort: 80 
+
